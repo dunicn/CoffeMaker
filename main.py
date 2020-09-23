@@ -1,74 +1,118 @@
-avl_water = 400
-avl_milk = 540
-avl_coffee = 120
-avl_money = 550
-disposable_cups = 9
+class CoffeeMaker:
+
+    def __init__(self):
+        self.water = 400
+        self.milk = 540
+        self.coffee = 120
+        self.money = 550
+        self.disposable_cups = 9
+
+        self.state = "main_menu"
+        self.user_interaction()
+
+    def user_interaction(self):
+        if self.state == "main_menu":
+            print("Write action (buy, fill, take, remaining, exit):")
+        elif self.state == "buy":
+            print("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino or 'back' if you changed your mind: ")
+        elif self.state == "fill_water":
+            print("Write how much water you want to add into the coffee machine")
+        elif self.state == "fill_milk":
+            print("Write how much milk you want to add into the coffee machine")
+        elif self.state == "fill_coffee":
+            print("Write how much coffee you want to add into the coffee machine: ")
+        elif self.state == "fill_disposable_cups":
+            print("Write how many disposable cups you want to add into the coffee machine: ")
+
+    def get_input(self, user_input):
+        if self.state == "main_menu":
+            print()
+            if user_input == "buy":
+                self.state = "buy"
+            if user_input == "fill":
+                self.state = "fill_water"
+            elif user_input == "take":
+                self.take()
+            elif user_input == "remaining":
+                self.remaining_resources()
+            elif user_input == "exit":
+                return False
+
+        elif self.state == "buy":
+            self.buy(user_input)
+            self.state = "main_menu"
+        elif self.state == "fill_water":
+            self.water += int(user_input)
+            self.state = "fill_milk"
+        elif self.state == "fill_milk":
+            self.milk += int(user_input)
+            self.state = "fill_coffee"
+        elif self.state == "fill_coffee":
+            self.coffee += int(user_input)
+            self.state = "fill_disposable_cups"
+        elif self.state == "fill_disposable_cups":
+            self.disposable_cups += int(user_input)
+            self.state = "main_menu"
+
+        if self.state == "main_menu":
+            print()
+        self.user_interaction()
+        return True
+
+    def buy(self, chosen_coffee):
+        water_needed = 0
+        milk_needed = 0
+        coffee_needed = 0
+        coffee_cost = 0
+        if chosen_coffee == "1":
+            water_needed = 250
+            milk_needed = 0
+            coffee_needed = 16
+            coffee_cost = 4
+
+        elif chosen_coffee == "2":
+            water_needed = 350
+            milk_needed = 75
+            coffee_needed = 20
+            coffee_cost = 7
+        elif chosen_coffee == "3":
+            water_needed = 200
+            milk_needed = 100
+            coffee_needed = 12
+            coffee_cost = 6
+        elif chosen_coffee == "back":
+            return
+
+        if self.water < water_needed:
+            print("Sorry, not enough water!")
+        elif self.milk < milk_needed:
+            print("Sorry, not enough milk!")
+        elif self.coffee < coffee_needed:
+            print("Sorry, not enough coffee!")
+        elif self.disposable_cups == 0:
+            print("Sorry, not enough disposable cups!")
+        else:
+            print("I have enough resources, making you a coffee!")
+            self.water -= water_needed
+            self.milk -= milk_needed
+            self.coffee -= coffee_needed
+            self.disposable_cups -= 1
+            self.money += coffee_cost
+
+    def take(self):
+        print("I gave you $", self.money)
+        self.money = 0
+
+    def remaining_resources(self):
+        print("The coffee machine has:")
+        print(self.water, "ml of water")
+        print(self.milk, "ml of milk")
+        print(self.coffee, "g of coffee beans")
+        print(self.disposable_cups, "of disposable cups")
+        print(self.money, " of money")
 
 
-def coffee_maker(water, milk, coffee, money):
-    global avl_water
-    global avl_milk
-    global avl_coffee
-    global avl_money
-    global disposable_cups
-    avl_water -= water
-    avl_milk -= milk
-    avl_coffee -= coffee
-    avl_money += money
-    disposable_cups -= 1
+coffee_maker = CoffeeMaker()
 
-
-def buy_method():
-    input_ = int(input("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino: "))
-    if input_ == 1:  # type int
-        return coffee_maker(250, 0, 16, 4)  # esspreso: water 250ml, no milk, coffee 16g, costs 4$
-    elif input_ == 2:
-        return coffee_maker(350, 75, 20, 7)  # latte: water 350ml, milk 75ml, coffee 20g, costs 7$
-    elif input_ == 3:
-        return coffee_maker(200, 100, 12, 6)  # cappuccino: water 200ml, milk 100ml, coffee 12g, costs 6$
-    #  input == back
-
-
-def fill_method():
-    global avl_water
-    global avl_milk
-    global avl_coffee
-    global disposable_cups
-    water = int(input("Write how much water you want to add into the coffee machine: "))
-    milk = int(input("Write how much milk you want to add into the coffee machine: "))
-    coffee = int(input("Write how much coffee you want to add into the coffee machine: "))
-    cups = int(input("Write how many disposable cups you want to add into the coffee machine: "))
-    avl_water += water
-    avl_milk += milk
-    avl_coffee += coffee
-    disposable_cups += cups
-
-
-def choose_method(input_):
-    if input_ == "buy":
-        return buy_method()  # there is no need for return
-    elif input_ == "fill":
-        return fill_method()
-    elif input_ == "take":
-        #  I gave you avl_money
-        global avl_money
-        avl_money = 0
-
-
-def print_status():  # remaining method
-    print("The coffee machine has:")
-    print(avl_water, "ml of water")
-    print(avl_milk, "ml of milk")
-    print(avl_coffee, "g of coffee beans")
-    print(disposable_cups, "of disposable cups")
-    print(avl_money, " of money")
-
-
-def coffee_machine_process():
-    input_ = str(input("Write action (buy, fill, take): "))
-    while input_ != "exit":
-        choose_method(input_)
-        input_ = str(input("Write action (buy, fill, take): "))
-
-coffee_machine_process()
-
+while coffee_maker.get_input(input()):
+    pass
