@@ -111,7 +111,6 @@ class CoffeeMaker:
         print(self.disposable_cups, "of disposable cups")
         print(self.money, " of money")
 
-
 coffee_maker = CoffeeMaker()
 
 while coffee_maker.get_input(input()):
